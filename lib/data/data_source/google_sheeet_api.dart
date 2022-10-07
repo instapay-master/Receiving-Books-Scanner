@@ -24,6 +24,9 @@ class GoogleSheetApi {
     try {
       final spreadsheet = await _gsheet.spreadsheet(spreadsheetId);
       _bookSheet = await _getWorkSheet(spreadsheet, title: title);
+
+      _bookSheet!.values.insertRow(1, ['isbn']);
+
     } catch (e) {
       print('init error $e');
     }
@@ -40,11 +43,11 @@ class GoogleSheetApi {
     }
   }
 
-  // Future<void> insert(List<Map<String, dynamic>> rowList) async {
-  //   if (_bookSheet == null) return;
-  //
-  //   await _bookSheet!.values.map.appendRows(rowList);
-  // }
+  Future<void> insert(List<Map<String, dynamic>> rowList) async {
+    if (_bookSheet == null) return;
+
+    await _bookSheet!.values.map.appendRows(rowList);
+  }
 
   // Future<List<ReceivingStatusData>> getBookData() async {
   //   if (_userSheet == null) return <ReceivingStatusData>[];

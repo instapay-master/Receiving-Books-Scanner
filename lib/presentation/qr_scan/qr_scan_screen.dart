@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:receiving_books_scanner/presentation/qr_scan/qr_scan_event.dart';
+import 'package:receiving_books_scanner/presentation/qr_scan/qr_scan_view_model.dart';
 
 class QrScanScreen extends StatefulWidget {
   const QrScanScreen({Key? key}) : super(key: key);
@@ -32,6 +35,9 @@ class _QrScanScreenState extends State<QrScanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<QrScanViewModel>();
+    final state = viewModel.state;
+
     var scanArea = (MediaQuery.of(context).size.width < 400 ||
             MediaQuery.of(context).size.height < 400)
         ? 150.0
@@ -39,11 +45,24 @@ class _QrScanScreenState extends State<QrScanScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('바코드 Scan'),
-      ),
+          automaticallyImplyLeading: false,
+          title: const Text(
+            '바코드 Scan',
+            style: TextStyle(color: Colors.black),
+          ),
+          backgroundColor: Colors.white,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context,state.isbnListSet);
+              },
+              child: Text('ISBN 전달'),
+            ),
+          ]),
       body: Column(
-        children: <Widget>[
+        children: [
           Expanded(
+            flex: 2,
             child: Stack(
               children: [
                 QRView(
@@ -54,9 +73,11 @@ class _QrScanScreenState extends State<QrScanScreen> {
                       await controller.pauseCamera();
                       result = scanData;
                       if (result!.code != null) {
-                        //print(result!.code);
                         //Navigator.pop(context, result!.code);
+                        viewModel.onEvent(QrScanEvent.addIsbn(result!.code!));
                       }
+                      await Future.delayed(const Duration(milliseconds: 500));
+                      await controller.resumeCamera();
                     });
                   },
                   overlay: QrScannerOverlayShape(
@@ -94,6 +115,32 @@ class _QrScanScreenState extends State<QrScanScreen> {
               ],
             ),
           ),
+          Expanded(
+              child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView.builder(
+              itemCount: state.isbnListSet.length,
+              itemBuilder: (BuildContext context, int index) {
+                List<String> data = state.isbnListSet.toList();
+                return data.isEmpty
+                    ? const Text('')
+                    : Column(
+                        children: [
+                          Text(
+                            data[index],
+                            style: const TextStyle(
+                              fontSize: 17,
+                            ),
+                          ),
+                          const Divider(
+                            thickness: 1.5,
+                            color: Colors.black45,
+                          ),
+                        ],
+                      );
+              },
+            ),
+          )),
         ],
       ),
     );

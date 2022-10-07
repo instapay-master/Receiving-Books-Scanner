@@ -5,7 +5,7 @@ part 'home_events.freezed.dart';
 
 @freezed
 class HomeEvents with _$HomeEvents {
-  const factory HomeEvents.onUpdateReceivingStatus(ReceivingStatusData statusData,bool isReceiving) = OnUpdateReceivingStatus;
-  const factory HomeEvents.searchIsbn(String isbn) = SearchIsbn;
   const factory HomeEvents.resetScreen() = ResetScreen;
+  const factory HomeEvents.setIsbnList(Set<String> isbn) = SetIsbnList;
+  const factory HomeEvents.sendIsbnList() = SendIsbnList;
 }
