@@ -26,6 +26,7 @@ class HomeViewModel with ChangeNotifier {
       resetScreen: dataReset,
       setIsbnList: setIsbnList,
       sendIsbnList: sendIsbnList,
+      deleteIsbn: deleteIsbn,
     );
   }
 
@@ -65,6 +66,15 @@ class HomeViewModel with ChangeNotifier {
       isbn: '',
       bookStatusList: [],
       isbnList: [],
+    );
+    notifyListeners();
+  }
+
+  void deleteIsbn(int index) {
+    List<String> isbnList = List.from(state.isbnList);
+    isbnList.removeAt(index);
+    _state = state.copyWith(
+      isbnList: isbnList,
     );
     notifyListeners();
   }

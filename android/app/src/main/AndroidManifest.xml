@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.instapayReceivingBooksScanner.receiving_books_scanner">
+    <uses-permission android:name="android.permission.INTERNET"/>
+
    <application
         android:label="receiving_books_scanner"
         android:name="${applicationName}"

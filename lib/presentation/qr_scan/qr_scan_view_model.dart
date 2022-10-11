@@ -8,7 +8,10 @@ class QrScanViewModel with ChangeNotifier {
   QrScanState get state => _state;
 
   void onEvent(QrScanEvent event) {
-    event.when(addIsbn: addIsbn);
+    event.when(
+      addIsbn: addIsbn,
+      deleteIsbn: deleteIsbn,
+    );
   }
 
   void addIsbn(String isbn) {
@@ -16,6 +19,16 @@ class QrScanViewModel with ChangeNotifier {
     temp.add(isbn);
     _state = state.copyWith(
       isbnListSet: temp,
+    );
+    notifyListeners();
+  }
+
+  void deleteIsbn(int index) {
+    Set<String> temp = Set.from(state.isbnListSet);
+    List<String> isbnList = temp.toList();
+    isbnList.removeAt(index);
+    _state = state.copyWith(
+      isbnListSet: isbnList.toSet(),
     );
     notifyListeners();
   }

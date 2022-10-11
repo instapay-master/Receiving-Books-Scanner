@@ -25,7 +25,7 @@ class GoogleSheetApi {
       final spreadsheet = await _gsheet.spreadsheet(spreadsheetId);
       _bookSheet = await _getWorkSheet(spreadsheet, title: title);
 
-      _bookSheet!.values.insertRow(1, ['isbn']);
+      _bookSheet!.values.insertRow(1, ['ISBN','Timestamp']);
 
     } catch (e) {
       print('init error $e');

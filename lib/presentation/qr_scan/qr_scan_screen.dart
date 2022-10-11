@@ -54,9 +54,9 @@ class _QrScanScreenState extends State<QrScanScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context,state.isbnListSet);
+                Navigator.pop(context, state.isbnListSet);
               },
-              child: Text('ISBN 전달'),
+              child: const Text('ISBN 전달'),
             ),
           ]),
       body: Column(
@@ -67,8 +67,12 @@ class _QrScanScreenState extends State<QrScanScreen> {
               children: [
                 QRView(
                   key: qrKey,
-                  onQRViewCreated: (controller) {
+                  onQRViewCreated: (controller) async {
                     this.controller = controller;
+                    if (Platform.isAndroid) {
+                      await controller.pauseCamera();
+                      await controller.resumeCamera();
+                    }
                     controller.scannedDataStream.listen((scanData) async {
                       await controller.pauseCamera();
                       result = scanData;
@@ -122,22 +126,48 @@ class _QrScanScreenState extends State<QrScanScreen> {
               itemCount: state.isbnListSet.length,
               itemBuilder: (BuildContext context, int index) {
                 List<String> data = state.isbnListSet.toList();
-                return data.isEmpty
-                    ? const Text('')
-                    : Column(
+                if (data.isEmpty) {
+                  return const Text('');
+                } else {
+                  return Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            data[index],
-                            style: const TextStyle(
-                              fontSize: 17,
+                          Expanded(
+                            child: Text(
+                              '${index + 1}',
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                          const Divider(
-                            thickness: 1.5,
-                            color: Colors.black45,
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              data[index],
+                              style: const TextStyle(
+                                fontSize: 17,
+                              ),
+                            ),
                           ),
+                          Expanded(
+                            child: Center(
+                              child: IconButton(
+                                  onPressed: () {
+                                    viewModel
+                                        .onEvent(QrScanEvent.deleteIsbn(index));
+                                  },
+                                  icon: const Icon(Icons.delete_outline_sharp)),
+                            ),
+                          )
                         ],
-                      );
+                      ),
+                      const Divider(
+                        thickness: 1.5,
+                        color: Colors.black45,
+                      ),
+                    ],
+                  );
+                }
               },
             ),
           )),

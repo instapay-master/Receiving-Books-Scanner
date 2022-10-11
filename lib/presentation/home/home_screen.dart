@@ -90,7 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                viewModel.onEvent(const HomeEvents.sendIsbnList());
+                                viewModel
+                                    .onEvent(const HomeEvents.sendIsbnList());
                               },
                               child: const Text('구글 시트로 보내기'),
                             ),
@@ -99,7 +100,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                viewModel.onEvent(const HomeEvents.resetScreen());
+                                viewModel
+                                    .onEvent(const HomeEvents.resetScreen());
                               },
                               child: const Text('화면 초기화'),
                             ),
@@ -107,16 +109,56 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    ...state.isbnList
-                        .map((e) => Column(
-                              children: [
-                                Text(e, style: textStyle),
-                                const Divider(
-                                  color: Colors.black45,
-                                )
-                              ],
-                            ))
-                        .toList(),
+                    ListView.builder(
+                      itemCount: state.isbnList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        List<String> data = state.isbnList;
+                        if (data.isEmpty) {
+                          return const Text('');
+                        } else {
+                          return Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      '${index + 1}',
+                                      textAlign:TextAlign.center,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      data[index],
+                                      style: const TextStyle(
+                                        fontSize: 17,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Center(
+                                      child: IconButton(
+                                          onPressed: () {
+                                            viewModel.onEvent(
+                                                HomeEvents.deleteIsbn(index));
+                                          },
+                                          icon: const Icon(
+                                              Icons.delete_outline_sharp)),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const Divider(
+                                thickness: 1.5,
+                                color: Colors.black45,
+                              ),
+                            ],
+                          );
+                        }
+                      },
+                      shrinkWrap: true,
+                    ),
                     const SizedBox(
                       height: 50,
                     ),
