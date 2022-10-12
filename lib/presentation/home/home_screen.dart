@@ -56,7 +56,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.camera_alt_outlined),
+        child: const Icon(
+          Icons.camera_alt_outlined,
+        ),
         onPressed: () async {
           final isbn = await Navigator.push(
             context,
@@ -70,6 +72,42 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.blue,
+        child: SizedBox(
+          height: 70,
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: IconButton(
+                    onPressed: () {
+                      viewModel.onEvent(const HomeEvents.sendIsbnList());
+                    },
+                    icon: const Icon(
+                      Icons.send,
+                      size: 35,
+                      color: Colors.white,
+                    )),
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: IconButton(
+                    onPressed: () {
+                      viewModel.onEvent(const HomeEvents.resetScreen());
+                    },
+                    icon: const Icon(
+                      Icons.refresh,
+                      size: 35,
+                      color: Colors.white,
+                    )),
+              ),
+            ],
+          ),
+        ),
+      ),
       appBar: AppBar(
         title: const Text('주문 정보'),
       ),
@@ -82,33 +120,6 @@ class _HomeScreenState extends State<HomeScreen> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: Row(
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                viewModel
-                                    .onEvent(const HomeEvents.sendIsbnList());
-                              },
-                              child: const Text('구글 시트로 보내기'),
-                            ),
-                            const SizedBox(
-                              width: 30,
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                viewModel
-                                    .onEvent(const HomeEvents.resetScreen());
-                              },
-                              child: const Text('화면 초기화'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                     ListView.builder(
                       itemCount: state.isbnList.length,
                       itemBuilder: (BuildContext context, int index) {
@@ -124,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Expanded(
                                     child: Text(
                                       '${index + 1}',
-                                      textAlign:TextAlign.center,
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
                                   Expanded(
