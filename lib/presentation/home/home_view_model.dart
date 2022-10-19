@@ -62,10 +62,11 @@ class HomeViewModel with ChangeNotifier {
       );
       notifyListeners();
 
-      await insertIsbn(state.isbnList);
+      await insertIsbn(state.count);
 
       _state = state.copyWith(
         isbnList: [],
+        count: {},
         isLoading: false,
       );
 

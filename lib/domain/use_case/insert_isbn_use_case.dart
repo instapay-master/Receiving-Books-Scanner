@@ -6,14 +6,18 @@ class InsertIsbnUseCase {
 
   InsertIsbnUseCase(this.repository);
 
-  Future<void> call(List<String> isbn) async {
+  Future<void> call(Map<String, int> isbnCount) async {
     var format = DateFormat('yyyy.MM.dd hh:mm:ss');
     String formatString = format.format(DateTime.now());
     List<Map<String, dynamic>> rowList = [];
+
+    List<String> isbn = List.from(isbnCount.keys);
+
     for (int i = 0; i < isbn.length; i++) {
       final Map<String, dynamic> temp = {
         "ISBN": isbn[i],
         "Timestamp": formatString,
+        "Count": isbnCount[isbn[i]],
       };
       rowList.add(temp);
     }
