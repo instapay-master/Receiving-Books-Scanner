@@ -6,4 +6,5 @@ part 'qr_scan_event.freezed.dart';
 class QrScanEvent with _$QrScanEvent {
   const factory QrScanEvent.addIsbn(String isbn) = AddIsbn;
   const factory QrScanEvent.deleteIsbn(int index) = DeleteIsbn;
+  const factory QrScanEvent.changeIsbnCount(String isbn, String count) = ChangeIsbnCount;
 }

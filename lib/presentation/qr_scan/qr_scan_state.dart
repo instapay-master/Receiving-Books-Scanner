@@ -7,6 +7,7 @@ part 'qr_scan_state.g.dart';
 class QrScanState with _$QrScanState {
   factory QrScanState({
     @Default({}) Set<String> isbnListSet,
+    @Default({}) Map<String,int> count,
   }) = _QrScanState;
   factory QrScanState.fromJson(Map<String, dynamic> json) => _$QrScanStateFromJson(json);
 }

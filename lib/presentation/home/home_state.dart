@@ -14,6 +14,7 @@ class HomeState with _$HomeState {
     @Default([]) List<ReceivingStatusData> bookStatusList,
     @Default({}) Set<ReceivingStatusData> receivingDoneSet,
     @Default([]) List<String> isbnList,
+    @Default({}) Map<String,int> count,
   }) = _HomeState;
 
   factory HomeState.fromJson(Map<String, dynamic> json) =>

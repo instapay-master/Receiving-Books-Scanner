@@ -23,14 +23,39 @@ class HomeViewModel with ChangeNotifier {
 
   void onEvent(HomeEvents event) {
     event.when(
-      resetScreen: dataReset,
-      setIsbnList: setIsbnList,
-      sendIsbnList: sendIsbnList,
-      deleteIsbn: deleteIsbn,
+      resetScreen: _dataReset,
+      sendIsbnList: _sendIsbnList,
+      deleteIsbn: _deleteIsbn,
+      setIsbnCount: _setIsbnCount,
+      changeIsbnCount: _changeIsbnCount,
     );
   }
 
-  Future<void> sendIsbnList() async {
+  void _changeIsbnCount(String isbn, String count) {
+    Map<String, int> tempCount = Map.from(_state.count);
+
+    tempCount[isbn] = int.parse(count);
+
+    _state = state.copyWith(
+      count: tempCount,
+    );
+    notifyListeners();
+  }
+
+  void _setIsbnCount(Map<String, int> count) {
+    _state = state.copyWith(
+      count: count,
+    );
+
+    Set<String> temp = {};
+    temp.addAll(count.keys);
+
+    setIsbnList(temp);
+
+    notifyListeners();
+  }
+
+  Future<void> _sendIsbnList() async {
     if (state.isbnList.isNotEmpty) {
       _state = state.copyWith(
         isLoading: true,
@@ -58,10 +83,9 @@ class HomeViewModel with ChangeNotifier {
     _state = state.copyWith(
       isbnList: temp,
     );
-    notifyListeners();
   }
 
-  void dataReset() {
+  void _dataReset() {
     _state = state.copyWith(
       isbn: '',
       bookStatusList: [],
@@ -70,7 +94,7 @@ class HomeViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteIsbn(int index) {
+  void _deleteIsbn(int index) {
     List<String> isbnList = List.from(state.isbnList);
     isbnList.removeAt(index);
     _state = state.copyWith(

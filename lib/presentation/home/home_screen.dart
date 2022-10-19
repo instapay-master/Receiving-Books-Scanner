@@ -15,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  TextEditingController textController = TextEditingController();
   StreamSubscription? _streamSubscription;
 
   @override
@@ -42,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _streamSubscription?.cancel();
+    textController.dispose();
     super.dispose();
   }
 
@@ -49,10 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final viewModel = context.watch<HomeViewModel>();
     final state = viewModel.state;
-    const textStyle = TextStyle(
-      fontSize: 18,
-      height: 1.4,
-    );
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -60,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Icons.camera_alt_outlined,
         ),
         onPressed: () async {
-          final isbn = await Navigator.push(
+          final Map<String, int>? isbn = await Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => ChangeNotifierProvider(
@@ -68,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const QrScanScreen())),
           );
           if (isbn != null) {
-            viewModel.onEvent(HomeEvents.setIsbnList(isbn));
+            viewModel.onEvent(HomeEvents.setIsbnCount(isbn));
           }
         },
       ),
@@ -139,11 +137,68 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   Expanded(
-                                    flex: 2,
+                                    flex: 3,
                                     child: Text(
                                       data[index],
                                       style: const TextStyle(
                                         fontSize: 17,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: InkWell(
+                                      onTap: () async {
+                                        await showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              textController.text =
+                                                  state.count[data[index]].toString();
+                                              return AlertDialog(
+                                                title: const Text('수량 변경'),
+                                                content: TextField(
+                                                  controller: textController,
+                                                  keyboardType: TextInputType.number,
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.of(context).pop(),
+                                                      child: const Text('취소')),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        viewModel.onEvent(
+                                                            HomeEvents.changeIsbnCount(
+                                                                data[index],
+                                                                textController.text));
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: const Text('확인')),
+                                                ],
+                                              );
+                                            });
+                                      },
+                                      child: Row(
+                                        children: [
+                                          const Text(
+                                            '수량 : ',
+                                            style: TextStyle(
+                                              fontSize: 17,
+                                              textBaseline: TextBaseline.ideographic,
+                                              decoration: TextDecoration.underline,
+                                              color: Colors.blue,
+                                            ),
+                                          ),
+                                          Text(
+                                            state.count[data[index]].toString(),
+                                            style: const TextStyle(
+                                              fontSize: 17,
+                                              textBaseline: TextBaseline.ideographic,
+                                              decoration: TextDecoration.underline,
+                                              color: Colors.blue,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),

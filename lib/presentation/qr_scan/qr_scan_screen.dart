@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_beep/flutter_beep.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:receiving_books_scanner/presentation/qr_scan/qr_scan_event.dart';
@@ -14,6 +15,7 @@ class QrScanScreen extends StatefulWidget {
 }
 
 class _QrScanScreenState extends State<QrScanScreen> {
+  TextEditingController textController = TextEditingController();
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
@@ -30,7 +32,13 @@ class _QrScanScreenState extends State<QrScanScreen> {
   @override
   void dispose() {
     controller?.dispose();
+    textController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -54,7 +62,7 @@ class _QrScanScreenState extends State<QrScanScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context, state.isbnListSet);
+                Navigator.pop(context, state.count);
               },
               child: const Text('ISBN 전달'),
             ),
@@ -74,6 +82,7 @@ class _QrScanScreenState extends State<QrScanScreen> {
                       await controller.resumeCamera();
                     }
                     controller.scannedDataStream.listen((scanData) async {
+                      FlutterBeep.beep();
                       await controller.pauseCamera();
                       result = scanData;
                       if (result!.code != null) {
@@ -141,11 +150,68 @@ class _QrScanScreenState extends State<QrScanScreen> {
                             ),
                           ),
                           Expanded(
-                            flex: 2,
+                            flex: 3,
                             child: Text(
                               data[index],
                               style: const TextStyle(
                                 fontSize: 17,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: InkWell(
+                              onTap: () async {
+                                await showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      textController.text =
+                                          state.count[data[index]].toString();
+                                      return AlertDialog(
+                                        title: const Text('수량 변경'),
+                                        content: TextField(
+                                          controller: textController,
+                                          keyboardType: TextInputType.number,
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                              child: const Text('취소')),
+                                          TextButton(
+                                              onPressed: () {
+                                                viewModel.onEvent(
+                                                    QrScanEvent.changeIsbnCount(
+                                                        data[index],
+                                                        textController.text));
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('확인')),
+                                        ],
+                                      );
+                                    });
+                              },
+                              child: Row(
+                                children: [
+                                  const Text(
+                                    '수량 : ',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      textBaseline: TextBaseline.ideographic,
+                                      decoration: TextDecoration.underline,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                  Text(
+                                    state.count[data[index]].toString(),
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                      textBaseline: TextBaseline.ideographic,
+                                      decoration: TextDecoration.underline,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
