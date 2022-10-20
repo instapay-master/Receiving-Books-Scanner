@@ -97,9 +97,14 @@ class HomeViewModel with ChangeNotifier {
 
   void _deleteIsbn(int index) {
     List<String> isbnList = List.from(state.isbnList);
+    Map<String,int> tempCount = Map.from(state.count);
+    String isbn = isbnList[index];
+
+    tempCount.remove(isbn);
     isbnList.removeAt(index);
     _state = state.copyWith(
       isbnList: isbnList,
+      count: tempCount,
     );
     notifyListeners();
   }

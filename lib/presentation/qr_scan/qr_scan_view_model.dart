@@ -36,10 +36,15 @@ class QrScanViewModel with ChangeNotifier {
 
   void _deleteIsbn(int index) {
     Set<String> temp = Set.from(state.isbnListSet);
+    Map<String,int> tempCount = Map.from(state.count);
     List<String> isbnList = temp.toList();
+    String isbn = isbnList[index];
+
+    tempCount.remove(isbn);
     isbnList.removeAt(index);
     _state = state.copyWith(
       isbnListSet: isbnList.toSet(),
+      count: tempCount,
     );
     notifyListeners();
   }
